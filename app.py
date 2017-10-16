@@ -18,13 +18,24 @@ def check_dropbox_sdk_init(db_object):
 
 
 def list_dropbox_folder(dbx, path):
+
 	try:
 		dir_listing = dbx.files_list_folder(path)
+
 		for item in dir_listing.entries:
-			print(item.path_display)
+			
+			if type(item) == dropbox.files.FileMetadata: 
+				print("*{}".format(item.name))
+
+			if type(item) == dropbox.files.FolderMetadata: 
+				print("") 
+				print("{}".format(item.path_display))
+				list_dropbox_folder(dbx, item.path_display)
 	except:
+		
 		if path == "":
 			path = "{folder root}"
+		
 		print("[!] Failed to return path {}".format(path))
 
 
@@ -32,7 +43,7 @@ if __name__ == "__main__":
 
 	dbx = dropbox.Dropbox(token)
 	check_dropbox_sdk_init(dbx)
-	list_dropbox_folder(dbx, "") #testing with root path ""
+	list_dropbox_folder(dbx, "")
 
 
 
