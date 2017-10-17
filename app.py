@@ -19,9 +19,23 @@ def check_dropbox_sdk_init(db_object):
 	return False
 
 
-def list_dropbox_folders(dbx, path):
-	""" List all the Dropbox folders
+def dropbox_stats(dbx, path):
+	""" Gather stats for the Dropbox account. 
 	"""
+
+	content_stats = {	"pdf":0, 
+						"docx":0,
+						"xlsx":0,
+						"pptx":0,
+						"doc":0,
+						"xls":0,
+						"ppt":0,
+						"exe":0,
+						"iso":0,
+						"jpg":0,
+						"png":0,
+						"other":0	}
+
 	try:
 		dir_listing = dbx.files_list_folder(path)
 
@@ -33,15 +47,17 @@ def list_dropbox_folders(dbx, path):
 			if type(item) == dropbox.files.FolderMetadata: 
 				print("") 
 				print("{}".format(item.path_display))
-				list_dropbox_folders(dbx, item.path_display)
+				dropbox_stats(dbx, item.path_display)
 	except:		
 		if path == "":
 			path = "{folder root}"
 		
 		print("[!] Failed to return path {}".format(path))
 
+	return content_stats
 
-def find_dot_git_folders(dbx, path, delete=False):
+
+def delete_dot_git_folders(dbx, path, delete=False):
 	""" Find, and optionally delete the .git folders in Dropbox
 	"""
 	try:
@@ -51,22 +67,30 @@ def find_dot_git_folders(dbx, path, delete=False):
 
 			if type(item) == dropbox.files.FolderMetadata: 
 				if item.name == ".git":
-					print("") 
-					print("{}".format(item.path_display))
-				find_dot_git_folders(dbx, item.path_display)
+					delete_folder(dbx, item.path_display)
+				else:
+					delete_dot_git_folders(dbx, item.path_display)
 	except:		
 		if path == "":
 			path = "{folder root}"
 		
-		print("[!] Failed to return path {}".format(path))
+		print("[!] We failed on this one: {}".format(path))
 
+
+def delete_folder(dbx, path):
+	""" Delete a folder
+	"""
+	print("[!] Deleting folder: {}".format(path))
+	result = dbx.files_delete(path)
+	print(result)
+	
 
 if __name__ == "__main__":
 
 	dbx = dropbox.Dropbox(TOKEN)
 	check_dropbox_sdk_init(dbx)
-	#list_dropbox_folders(dbx, "")
-	find_dot_git_folders(dbx, "")
+	dropbox_stats(dbx, "")
+	#delete_dot_git_folders(dbx, "")
 
 
 
