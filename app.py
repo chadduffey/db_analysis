@@ -18,6 +18,12 @@ def check_dropbox_sdk_init(db_object):
 
 	return False
 
+def stats_update(stats, item):
+
+	if "." in item:
+		print(rfind("."))
+	
+
 
 def dropbox_stats(dbx, path):
 	""" Gather stats for the Dropbox account. 
