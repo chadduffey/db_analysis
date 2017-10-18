@@ -18,11 +18,15 @@ def check_dropbox_sdk_init(db_object):
 
 	return False
 
-def stats_update(stats, item):
+def stats_update(item):
+	"""finding extension and updating stats
+	"""
 
-	if "." in item:
-		print(rfind("."))
-	
+	#Get the extension to know which bucket it belongs to
+	if "." in item.name:
+		location = item.name.rfind(".")
+		#print("\t{}".format(item[location,]))
+		print("\textension: {}".format(item.name[location:]))
 
 
 def dropbox_stats(dbx, path):
@@ -36,7 +40,7 @@ def dropbox_stats(dbx, path):
 			
 			if type(item) == dropbox.files.FileMetadata: 
 				print(". {}".format(item.name))
-				stats_update(content_stats, item.name)
+				stats_update(item)
 
 			if type(item) == dropbox.files.FolderMetadata: 
 				print("") 
@@ -47,8 +51,6 @@ def dropbox_stats(dbx, path):
 			path = "{folder root}"
 		
 		print("[!] Failed to return path {}".format(path))
-
-	return content_stats
 	
 
 if __name__ == "__main__":
