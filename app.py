@@ -18,29 +18,45 @@ def check_dropbox_sdk_init(db_object):
 
 	return False
 
-def stats_update(item):
-	"""finding extension and updating stats
+def extension_type(item):
+	"""finding extension 
 	"""
 
 	#Get the extension to know which bucket it belongs to
 	if "." in item.name:
 		location = item.name.rfind(".")
-		#print("\t{}".format(item[location,]))
 		print("\textension: {}".format(item.name[location:]))
+		return item.name[location:]
+
+	return ".none"
+
+def update_stats(ext_type):
+	"""update the global dictionary that holds all the extension types.
+	"""
+	global stats_dict
+
+	if len(ext_type) > 5:
+		pass
+
+	if ext_type in stats_dict:
+		stats_dict[ext_type] += 1
+	else:
+		stats_dict[ext_type] = 1
+
+	print(stats_dict)
 
 
 def dropbox_stats(dbx, path):
 	""" Gather stats for the Dropbox account. 
 	"""
-
 	try:
 		dir_listing = dbx.files_list_folder(path)
 
 		for item in dir_listing.entries:
 			
 			if type(item) == dropbox.files.FileMetadata: 
-				print(". {}".format(item.name))
-				stats_update(item)
+				#print(". {}".format(item.name))
+				update_stats(extension_type(item))
 
 			if type(item) == dropbox.files.FolderMetadata: 
 				print("") 
@@ -55,10 +71,11 @@ def dropbox_stats(dbx, path):
 
 if __name__ == "__main__":
 
+	stats_dict = {}
+
 	dbx = dropbox.Dropbox(TOKEN)
 	check_dropbox_sdk_init(dbx)
 	dropbox_stats(dbx, "")
-	#delete_dot_git_folders(dbx, "")
 
 
 
