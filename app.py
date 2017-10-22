@@ -1,9 +1,12 @@
 import dropbox
 import os
 
+from flask import Flask 	
 
 TOKEN = os.environ['DB_TOKEN']
+DEBUG = True
 
+app = Flask(__name__)
 
 def check_dropbox_sdk_init(db_object):
 	""" Quick check to make sure we successfully initialized a Dropbox object. 
@@ -71,16 +74,25 @@ def dropbox_stats(dbx, path):
 			path = "{folder root}"
 		
 		print("[!] Failed to return path {}".format(path))
-	
+
+
+@app.route('/')
+def hello_world():
+	return "Ready to do Dropbox things with token: " + str(TOKEN)	
 
 if __name__ == "__main__":
 
 	stats_dict = {}
 	size_dict = {}
 
+	#start flask app
+	app.run()
+
+
 	dbx = dropbox.Dropbox(TOKEN)
 	check_dropbox_sdk_init(dbx)
-	dropbox_stats(dbx, "")
+	#dropbox_stats(dbx, "")
+
 
 
 
