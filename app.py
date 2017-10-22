@@ -25,25 +25,29 @@ def extension_type(item):
 	#Get the extension to know which bucket it belongs to
 	if "." in item.name:
 		location = item.name.rfind(".")
-		print("\textension: {}".format(item.name[location:]))
+		print("\n\tname: {}\n\textension: {}\n\tsize: {}\n".format(item.name, item.name[location:], item.size))
 		return item.name[location:]
 
 	return ".none"
 
-def update_stats(ext_type):
+def update_stats(ext_type, size):
 	"""update the global dictionary that holds all the extension types.
 	"""
 	global stats_dict
+	global size_dict
 
 	if len(ext_type) > 5:
 		pass
 
 	if ext_type in stats_dict:
 		stats_dict[ext_type] += 1
+		size_dict[ext_type] += size
 	else:
 		stats_dict[ext_type] = 1
+		size_dict[ext_type] = size
 
-	print(stats_dict)
+	print("\t{}".format(stats_dict))
+	print("\t{}".format(size_dict))
 
 
 def dropbox_stats(dbx, path):
@@ -56,7 +60,7 @@ def dropbox_stats(dbx, path):
 			
 			if type(item) == dropbox.files.FileMetadata: 
 				#print(". {}".format(item.name))
-				update_stats(extension_type(item))
+				update_stats(extension_type(item), item.size)
 
 			if type(item) == dropbox.files.FolderMetadata: 
 				print("") 
@@ -72,6 +76,7 @@ def dropbox_stats(dbx, path):
 if __name__ == "__main__":
 
 	stats_dict = {}
+	size_dict = {}
 
 	dbx = dropbox.Dropbox(TOKEN)
 	check_dropbox_sdk_init(dbx)
