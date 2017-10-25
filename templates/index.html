@@ -1,11 +1,35 @@
+{% extends "bootstrap/base.html" %}
+
 <html>
   <head>
     <title>{{ title }} - Dropbox Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-      <h3>Using token: {{ token }}</h3>
-      <p>Connected to API: {{ connected }}</p>
-      <p>File Sizes: {{ stats }}</p>
-      <p>File Numbers: {{ size }}</p>
+
+		{% block content %}
+			<div class="alert alert-info" role="alert">
+	  			Using token: {{ token }}
+			</div>
+			
+	      	<div class="alert alert-success" role="alert">
+	  			Connected to API: {{ connected }}
+			</div>
+	      	
+			<div class="alert alert-info" role="alert">
+			  File Sizes: {{ stats }}
+			</div>
+
+			<div class="alert alert-info" role="alert">
+			  File Numbers: {{ size }}
+			</div>
+		{% endblock %}
+  	
   </body>
 </html>
+
+
+
+
+
+
