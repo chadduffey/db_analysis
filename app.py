@@ -5,13 +5,11 @@ import dbcheck
 import stats
 
 from flask import Flask, render_template 
-from flask_bootstrap import Bootstrap	
 
 TOKEN = os.environ['DB_TOKEN']
 DEBUG = True
 
 app = Flask(__name__)
-Bootstrap(app)
 
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = DEBUG
@@ -22,10 +20,8 @@ app.config['DEBUG'] = DEBUG
 def index():
 	return render_template('index.html',
                            title='Home',
-                           connected=connection_result,
-                           token=TOKEN,
                            stats=stats_dict,
-                           size=size_dict)	
+                           size=size_dict,)	
 
 
 if __name__ == "__main__":
