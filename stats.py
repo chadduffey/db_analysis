@@ -3,14 +3,15 @@ import dropbox
 stats_dict = {}
 size_dict = {}
 
+
 def extension_type(item):
 	"""finding extension 
 	"""
 
-	#Get the extension to know which bucket it belongs to
+	# Get the extension to know which bucket it belongs to
 	if "." in item.name:
 		location = item.name.rfind(".")
-		#print("\n\tname: {}\n\textension: {}\n\tsize: {}\n".format(item.name, item.name[location:], item.size))
+		# print("\n\tname: {}\n\textension: {}\n\tsize: {}\n".format(item.name, item.name[location:], item.size))
 		return item.name[location:]
 
 	return ".none"
@@ -46,7 +47,7 @@ def dropbox_stats(dbx, path, testing_mode=False):
 		for item in dir_listing.entries:
 			
 			if type(item) == dropbox.files.FileMetadata: 
-				#print(". {}".format(item.name))
+				print(". {}".format(item.name))
 				update_stats(extension_type(item), item.size, testing_mode)
 
 			if type(item) == dropbox.files.FolderMetadata: 

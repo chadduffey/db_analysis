@@ -6,8 +6,6 @@ def check(db_object):
 		db_object.users_get_current_account()
 		print("[*] Success. Connected to Dropbox API")
 		return True
-	except:
+	except NameError:
 		print("[*] Fail. Unable to connect to Dropbox API. Did you set DB_TOKEN environment variable?")
 		return False
-
-	return False
