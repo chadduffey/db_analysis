@@ -22,31 +22,40 @@ app.config['DEBUG'] = DEBUG
 APP_KEY = 'nmn3f95z152pmbs'
 APP_SECRET = os.environ.get('APP_SECRET')
 
+REDIRECT_URI = "http://localhost:5000/dropbox-auth-finish"
+
 def get_dropbox_auth_flow(web_app_session):
-    redirect_uri = WEBSERVER + "/dropbox-auth-finish"
-    return DropboxOAuth2Flow(
-        APP_KEY, APP_SECRET, redirect_uri, web_app_session,
-        "dropbox-auth-csrf-token")
+    return DropboxOAuth2Flow(APP_KEY, APP_SECRET, REDIRECT_URI,
+                             web_app_session, "dropbox-auth-csrf-token")
 
 @app.route('/dropbox-auth-start')
 def dropbox_auth_start(web_app_session=session, request=request):
     authorize_url = get_dropbox_auth_flow(web_app_session).start()
-    print(authorize_url) #----
     return redirect(authorize_url)
 
 @app.route('/dropbox-auth-finish')
-def dropbox_auth_finish(web_app_session=session, request=request):
-    print("finish") #-----------
+def dropbox_auth_finish():
+    #struggling with the SDK, hacking this in for now
+
     try:
-        oauth_result = \
-                get_dropbox_auth_flow(web_app_session).finish(
-                    request.query_params)
-        print("success")
+        finish_dict = {}
+        finish_dict["code"] = request.args["code"]
+        finish_dict["grant_type"] = 'authorization_code'
+        finish_dict["client_id"] = APP_KEY
+        finish_dict["client_secret"] = APP_SECRET
+        finish_dict["redirect_uri"] = REDIRECT_URI
+
+        r = requests.post('https://api.dropboxapi.com/oauth2/token', data=finish_dict)
+
+        print(r.text)
+
+        session["logged_in_to_dropbox"] = True
+        return redirect('/')
+        #with sdk it is meant to be like this:
+        #access_token, user_id, url_state = get_dropbox_auth_flow(session).finish(finish_dict)
     
     except:
-        # Start the auth flow again.
-        print(sys.exc_info()[0])
-        return redirect("/dropbox-auth-start")
+        return "something is broken"
 
 @app.route('/')
 @app.route('/index')
@@ -57,9 +66,7 @@ def index():
 		return render_template('index.html', title='Welcome')
 	else:
 		#log them in
-		print("session: {}".format(session))
-		print(request)
-		return render_template('index.html', title='test')
+		return render_template('index.html', title='Log In!')
 
 if __name__=='__main__':
 	app.run(debug=True)
